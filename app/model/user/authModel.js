@@ -23,7 +23,6 @@ class login {
         let newUser = {
             // name: req.body.name , 
             // lastName : req.body.lastName,
-            full_name: req.body.full_name,
             email: req.body.email,
             // phoneNumber :req.body.phoneNumber,
             password: req.body.password
@@ -47,12 +46,51 @@ class login {
         return result[0].changedRows
     }
     async updateUserPasswordForReset(req, email) {
-        const result = await db.query(`
+        const [result] = await db.query(`
         update users set password = ?
         where email = ?
         ` , [req.body.newPass, email])
         return result[0].changedRows
     }
+
+
+    async update(req, table, fields = [], options) {
+        const [result] = await db.query(`
+        update ${table} set  ${fields[0]}=?
+        where  = ? ` , [options])
+        return result;
+    }
+
+
+    async delete(req, table, fields = [], options) {
+        const [result] = await db.query(`
+        delete from ${table}
+        where ??
+        ` , )
+        return result.affectedRows > 0
+
+
+    }
+
+    async findOne(req, table, fields = [], options) {
+        const lookFor = fields.length > 0 ? fields.join(`,`) : `*`
+        const [result] = await db.query(`
+        select ${lookFor} from ${table} 
+        where  =?
+        limit 1` , [options])
+        return result
+    }
+
+    async insert(req, table, fields = [], options) {  //  ?
+        const myData = { password: req.password } //
+        const result = await db.query(`
+        insert into ${table}  
+        values set ?` , myData)
+        return result.insertId
+    }
+
 }
+
+
 
 module.exports = new login

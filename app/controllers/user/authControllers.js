@@ -7,14 +7,20 @@ class authController {
     constructor() { }
     async login(req, res) {
         const user = await model.findUser(req)
-        return user.length > 0 ? res.status(200).send(JSON.stringify(user[0])) : res.status(400).send({ message: `wrong email or password ...` })
+        if (user.length > 0) {
+            // req.login(user[0].id, (err) => {
+            req.login(user[0], (err) => {
+                return res.redirect(`/dashboard`)
+            })
+        }
+        return res.status(400).send({ message: `user doesn't exists ...` })
     }
 
     async register(req, res) {
         const user = await model.findUser(req)
         if (user.length == 0) {
             const registeredUser = await model.insertUser(req)
-            req.login(registeredUser.insertId, (err) => {
+            req.login(registeredUser, (err) => {
                 return res.redirect(`/dashboard`)
             })
             // return registeredUser ? res.status(200).send(JSON.stringify(registeredUser)) : res.status(400)

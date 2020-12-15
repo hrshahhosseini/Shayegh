@@ -7,9 +7,5 @@ module.exports = {
         type: `string`,
         alphanum: `true`,
         min:6
-    },
-    resetLink:{
-        data:`string`,
-        default:``
     }
 }
