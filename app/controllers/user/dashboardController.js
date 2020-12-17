@@ -9,7 +9,12 @@ class DashboardController {
 
     async addToGroup(req, res) {
         const result = await model.addUser(req, `users`, [], `email`)
-        return res.send({message:`olla`})
+        return res.send({ message: `olla` })
+    }
+
+    async wallet(req, res) {
+        const result = await model.chargeWallet(req)
+        return result > 0 ? res.redirect(`/dashboard`) : res.redirect(`/dashboard/wallet/wallet-charge`)
     }
 
 

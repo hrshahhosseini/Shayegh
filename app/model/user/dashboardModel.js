@@ -1,6 +1,7 @@
 const db = require(`../../../database/index`)
 class DashboardModel {
     constructor() { }
+    //  ----- group ------
     async newGroup(req, table, fields, options) {
         const [result] = await this.insert(req, table, fields, options)
         await this.update2(req)
@@ -45,6 +46,18 @@ class DashboardModel {
         update users set team =?
         where id = ? `, [req.body.groupName, req.user.id])
         return
+    }
+    //  ----- wallet -----
+    async chargeWallet(req) {
+        const [result1] = await db.query(`
+        select walletAmount from users
+        where id = ?
+        limit 1`, [req.user.id])
+        const sumAmount = Number(Object.values(result1[0])[0]) + Number(req.body.amount)
+        const [result] = await db.query(`
+        update users set walletAmount = ?
+        where id = ?` , [sumAmount.toString(), req.user.id])
+        return result.affectedRows
     }
 
 }
