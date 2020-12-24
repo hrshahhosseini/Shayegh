@@ -6,8 +6,8 @@ const authenticated = require(`../../../middleware/authentication`).notAuthentic
 
 const controller = require(`../../../controllers/user/authControllers`)
 
-router.post(`/:whereToGo1/:whereToGo2`, [loginValidator(validatorPartials), authenticated()], controller.login) // login
-router.get(`/:whereToGo1/:whereToGo2`, authenticated(), (req, res) => {
+router.post(`/`, [loginValidator(validatorPartials), authenticated()], controller.login) // login
+router.get(`/`, authenticated(), (req, res) => {
     res.send({ message: `ur here to login ...` })
 })
 

@@ -18,7 +18,7 @@ Router.post(`/confirm-request/:token`, function (req, res, next) {
     if (req.isAuthenticated())
         return next()
     else
-        return res.redirect(`auth/login/wallet/confirm-request`)
+        return res.redirect(`auth/login`)
 }, controller.requestChargeDo)
 
 
