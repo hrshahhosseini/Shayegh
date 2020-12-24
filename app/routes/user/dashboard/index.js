@@ -5,11 +5,14 @@ const authenticated = require(`../../../middleware/authentication`)
 const isAuthenticated = authenticated.authenticate
 const isNotAuthenticated = authenticated.notAuthenticate
 const dashboardController = require(`../../../controllers/user/dashboardController`)
+
 Router.get(`/`, (req, res) => {
-    res.send({ msg: `Hi, here is dashboard` })
+    res.send({ msg: req.user, message: `here is dashboard ...` })
 })
 Router.post(`/newGroup`, [isAuthenticated()], dashboardController.createGroup)
 Router.post(`/addToGroup`, [isAuthenticated()], dashboardController.addToGroup)
+Router.post(`/removeFromGroup`, [isAuthenticated()], dashboardController.remove)
+Router.post(`/removeGroup`, [isAuthenticated()], dashboardController.removeGroup)
 Router.use(`/wallet`, wallet)
 
 

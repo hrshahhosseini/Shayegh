@@ -1,5 +1,5 @@
 const model = require(`../../model/user/authModel`)
-const email = require(`../../services/mailService`)
+const emailService = require(`../../services/mailService`)
 const jwt = require(`jsonwebtoken`)
 const passport = require(`passport`)
 
@@ -8,8 +8,8 @@ class authController {
     async login(req, res) {
         const user = await model.findUser(req)
         if (user.length > 0) {
-            // req.login(user[0].id, (err) => {
             req.login(user[0], (err) => {
+                //req.session.user = req.user;
                 return res.redirect(`/dashboard`)
             })
         }
@@ -18,9 +18,9 @@ class authController {
 
     async register(req, res) {
         const user = await model.findUser(req)
-        if (user.length == 0) {
+        if (user.length == 0) {            
             const registeredUser = await model.insertUser(req)
-            req.login(registeredUser, (err) => {
+            req.login(registeredUser[0], (err) => {
                 return res.redirect(`/dashboard`)
             })
             // return registeredUser ? res.status(200).send(JSON.stringify(registeredUser)) : res.status(400)
@@ -37,7 +37,7 @@ class authController {
         //     console.log(encodedData)
         // })
         const result = await model.updateUserResetLinkForReset(req, token)
-        email.mail(req, token)
+        emailService.mail(req, token)
         return res.redirect(`/auth/login/reset-password/:token`)
     }
 

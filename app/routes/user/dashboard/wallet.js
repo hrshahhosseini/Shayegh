@@ -10,6 +10,16 @@ Router.get(`/`, (req, res) => {
 })
 Router.post(`/charge-wallet`, [isAuthenticated()], controller.wallet)
 
+Router.post(`/charge-request`, controller.requestCharge)
+
+Router.get(`/confirm-request/:token`, [isAuthenticated()], controller.requestChargeShow)
+
+Router.post(`/confirm-request/:token`, function (req, res, next) {
+    if (req.isAuthenticated())
+        return next()
+    else
+        return res.redirect(`auth/login/wallet/confirm-request`)
+}, controller.requestChargeDo)
 
 
 

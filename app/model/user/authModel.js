@@ -29,7 +29,11 @@ class login {
         }
         const [result] = await db.query(`
         insert into users set ? ` , newUser)
-        return result
+        const [mainResult] = await db.query(`
+        select * from users
+        where id = ?
+        limit 1` , [result.insertId])
+        return mainResult
     }
     async findOneForReset(columns = [], table, option) {
         const lookFor = columns.length > 0 ? columns.join(`,`) : `*`
@@ -42,7 +46,6 @@ class login {
         const result = await db.query(`
         update users set resetLink = ? 
         where email = ?` , [token, req.body.email])
-        console.log(result[0].changedRows)
         return result[0].changedRows
     }
     async updateUserPasswordForReset(req, email) {
