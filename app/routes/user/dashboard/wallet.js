@@ -12,14 +12,16 @@ Router.post(`/charge-wallet`, [isAuthenticated()], controller.wallet)
 
 Router.post(`/charge-request`, controller.requestCharge)
 
-Router.get(`/confirm-request/:token`, [isAuthenticated()], controller.requestChargeShow)
-
-Router.post(`/confirm-request/:token`, function (req, res, next) {
+Router.get(`/confirm-request/:token`, function (req, res, next) {
+    const token = req.params.token
     if (req.isAuthenticated())
         return next()
-    else
-        return res.redirect(`auth/login`)
-}, controller.requestChargeDo)
+    else {
+        return res.redirect(`/auth/login/dashboard/wallet/confirm-request/${token}`)
+    }
+}, controller.requestChargeShow)
+
+Router.post(`/confirm-request/:token`, [isAuthenticated()], controller.requestChargeDo)
 
 
 

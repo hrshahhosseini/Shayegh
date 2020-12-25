@@ -12,12 +12,14 @@
     "express-mysql-session": "^2.1.4",
     "express-session": "^1.17.1",
     "fastest-validator": "^1.9.0",
+    "fs": "0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.2.5",
     "nodemailer": "^6.4.16",
     "nodemon": "^2.0.6",
     "passport": "^0.4.1",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "path": "^0.12.7"
   },
   "devDependencies": {},
   "scripts": {

@@ -9,8 +9,18 @@ class authController {
         const user = await model.findUser(req)
         if (user.length > 0) {
             req.login(user[0], (err) => {
-                //req.session.user = req.user;
                 return res.redirect(`/dashboard`)
+            })
+        }
+        return res.status(400).send({ message: `user doesn't exists ...` })
+    }
+    async loginGoWhere(req, res) {
+        const user = await model.findUser(req)
+        if (user.length > 0) {
+            req.login(user[0], (err) => {
+                // if (req.params.where = undefined) return res.redirect(`/dashboard`)
+                console.log(req.params.where, req.params.to)
+                return res.redirect(`/${req.params.where}/${req.params.to}/${req.params.go}/${req.params.token}`)
             })
         }
         return res.status(400).send({ message: `user doesn't exists ...` })
@@ -18,7 +28,7 @@ class authController {
 
     async register(req, res) {
         const user = await model.findUser(req)
-        if (user.length == 0) {            
+        if (user.length == 0) {
             const registeredUser = await model.insertUser(req)
             req.login(registeredUser[0], (err) => {
                 return res.redirect(`/dashboard`)
