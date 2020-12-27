@@ -12,7 +12,7 @@ router.get(`/`, authenticated(), (req, res) => {
 router.get(`/:where/:to/:go`, authenticated(), (req, res) => {
     res.send({ message: `ur here to login ... , ${req.params.where}` })
 })
-// router.post(`/`, [loginValidator(validatorPartials), authenticated()], controller.login) // login
+router.post(`/`, [loginValidator(validatorPartials), authenticated()], controller.login) // login
 router.post(`/:where/:to/:go/:token`, [loginValidator(validatorPartials), authenticated()], controller.loginGoWhere) // req
 
 
