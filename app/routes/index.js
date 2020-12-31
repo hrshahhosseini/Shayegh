@@ -1,6 +1,5 @@
 const mainUser = require(`./user/index`)
 const express = require('express')
-
 module.exports = (app) => {
     app.use((req, res, next) => {   // favicon.ico problem
         if (req.url === '/favicon.ico') {
@@ -10,4 +9,10 @@ module.exports = (app) => {
         next()
     })
     app.use(`/`, mainUser)
+
+    app.use((req, res, next) => {
+        return res.redirect(`/notFound`)
+        next()
+    })
+    
 }

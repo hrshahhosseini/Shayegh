@@ -28,6 +28,7 @@ class DashboardController {
     }
 
     async wallet(req, res) {
+        console.log(`hi`)
         const result = await model.chargeWallet(req)
         return result > 0 ? res.redirect(`/dashboard`) : res.redirect(`/dashboard/wallet/wallet-charge`)
     }

@@ -12,5 +12,8 @@ Router.delete(`/logout`, (req, res) => {
     res.redirect(`/auth/login`)
 })
 Router.post(`/register`, registerValidator(validatorPartials), registerController.register)
+Router.get(`/register`, registerValidator(validatorPartials), (req, res) => {
+    res.send({ message: `here is register route` })
+})
 
 module.exports = Router

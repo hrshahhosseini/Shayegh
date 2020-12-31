@@ -2,29 +2,30 @@ const express = require(`express`)
 const router = express.Router()
 const loginValidator = require(`../../../validator/loginValidatorMiddleware`)
 const validatorPartials = require(`../../../validator/loginValidator`)
-const authenticated = require(`../../../middleware/authentication`).notAuthenticate
-
+const authenticated = require(`../../../middleware/authentication`)
+const isAuthenticated = authenticated.authenticate
+const isNotAuthenticated = authenticated.notAuthenticate
 const controller = require(`../../../controllers/user/authControllers`)
 
-router.get(`/`, authenticated(), (req, res) => {
+router.get(`/`, [isNotAuthenticated()], (req, res) => {
     res.send({ message: `ur here to login ...` })
 })
-router.get(`/:where/:to/:go`, authenticated(), (req, res) => {
+router.post(`/`, [loginValidator(validatorPartials), isNotAuthenticated()], controller.login) // login
+
+router.get(`/:where/:to/:go`, [isAuthenticated()], (req, res) => {
     res.send({ message: `ur here to login ... , ${req.params.where}` })
 })
-router.post(`/`, [loginValidator(validatorPartials), authenticated()], controller.login) // login
-router.post(`/:where/:to/:go/:token`, [loginValidator(validatorPartials), authenticated()], controller.loginGoWhere) // req
+router.post(`/:where/:to/:go/:token`, [loginValidator(validatorPartials), isAuthenticated()], controller.loginGoWhere) // req
 
-
-router.get(`/forget-password`, (req, res) => {
+router.get(`/forget-password`, [isAuthenticated()], (req, res) => {
     res.send({ message: `ur here to enter ur email ...` })
 })
-router.post(`/forget-password`, controller.forgetPassword) // enter email  |  request midim baray in safhe
+router.post(`/forget-password`, [isAuthenticated()], controller.forgetPassword) // enter email  |  request midim baray in safhe
 
-router.get(`/reset-password/:token`, (req, res) => {
+router.get(`/reset-password/:token`, [isAuthenticated()], (req, res) => {
     res.send({ message: `ur here to enter new password ...` })
 })
-router.post(`/reset-password/:token`, controller.resetPassword) // enter new password
+router.post(`/reset-password/:token`, [isAuthenticated()], controller.resetPassword) // enter new password
 
 
 module.exports = router
