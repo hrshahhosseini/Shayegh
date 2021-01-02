@@ -28,13 +28,13 @@ class DashboardController {
     }
 
     async wallet(req, res) {
-        console.log(`hi`)
         const result = await model.chargeWallet(req)
         return result > 0 ? res.redirect(`/dashboard`) : res.redirect(`/dashboard/wallet/wallet-charge`)
     }
 
     async requestCharge(req, res) {
-        const token = jwt.sign({ email: req.user.email, amount: req.body.amount }, process.env.CHARGE_REQUEST_SECRET, { expiresIn: `200000000m` })
+        const [email] = await db.query(`select email from users where id = ? limit 1`, [req.user.id])
+        const token = jwt.sign({ email: email[0].email, amount: req.body.amount }, process.env.CHARGE_REQUEST_SECRET, { expiresIn: `10m` })
         mailService.mail(req, token)
         return res.redirect(`/dashboard`)
     }

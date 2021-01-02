@@ -1,5 +1,7 @@
 const express = require(`express`)
 const Router = express.Router()
+const authenticated = require(`../../middleware/authentication`)
+const isNotAuthenticated = authenticated.notAuthenticate
 
 const login = require(`./login/index`)
 const registerController = require(`../../controllers/user/authControllers`)
@@ -11,9 +13,9 @@ Router.delete(`/logout`, (req, res) => {
     req.logout()
     res.redirect(`/auth/login`)
 })
-Router.post(`/register`, registerValidator(validatorPartials), registerController.register)
-Router.get(`/register`, registerValidator(validatorPartials), (req, res) => {
+Router.get(`/register`, [isNotAuthenticated()], (req, res) => {
     res.send({ message: `here is register route` })
 })
+Router.post(`/register`, registerValidator(validatorPartials), registerController.register)
 
 module.exports = Router

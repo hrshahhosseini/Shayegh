@@ -22,8 +22,8 @@ class login {
     async insertUser(req) {
         let newUser = {
             // name: req.body.name , 
-            // lastName : req.body.lastName,
             email: req.body.email,
+            // lastName : req.body.lastName,
             // phoneNumber :req.body.phoneNumber,
             password: req.body.password
         }
@@ -71,8 +71,6 @@ class login {
         where ??
         ` , )
         return result.affectedRows > 0
-
-
     }
 
     async findOne(req, table, fields = [], options) {

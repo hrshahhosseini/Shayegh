@@ -6,7 +6,7 @@ const isAuthenticated = authenticated.authenticate
 const isNotAuthenticated = authenticated.notAuthenticate
 const dashboardController = require(`../../../controllers/user/dashboardController`)
 
-Router.get(`/`, (req, res) => {
+Router.get(`/`, [isAuthenticated()], (req, res) => {
     res.send({ msg: req.user, message: `here is dashboard ...` })
 })
 Router.post(`/newGroup`, [isAuthenticated()], dashboardController.createGroup)

@@ -139,8 +139,6 @@ class DashboardModel {
         where email = ?
         ` , [sumAmount, option.email])
         return [result.affectedRows, result4.affectedRows]
-
-
     }
 }
 

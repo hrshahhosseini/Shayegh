@@ -6,7 +6,7 @@ const isNotAuthenticated = authenticated.notAuthenticate
 const controller = require(`../../../controllers/user/dashboardController`)
 
 Router.get(`/`, [isAuthenticated()], (req, res) => {
-    res.send({ message: `hi` })
+    res.send({ message: `here is wallet ...` })
 })
 Router.post(`/charge-wallet`, [isAuthenticated()], controller.wallet)
 
@@ -22,8 +22,6 @@ Router.get(`/confirm-charge-request/:token`, function (req, res, next) {
 }, controller.requestChargeShow)
 
 Router.post(`/confirm-charge-request/:token`, [isAuthenticated()], controller.requestChargeDo)
-
-
 
 
 module.exports = Router

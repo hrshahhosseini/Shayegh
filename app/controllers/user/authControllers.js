@@ -8,7 +8,7 @@ class authController {
     async login(req, res) {
         const user = await model.findUser(req)
         if (user.length > 0) {
-            req.login(user[0], (err) => {
+            req.login(user[0].id, (err) => {
                 return res.redirect(`/dashboard`)
             })
         }
@@ -17,7 +17,7 @@ class authController {
     async loginGoWhere(req, res) {
         const user = await model.findUser(req)
         if (user.length > 0) {
-            req.login(user[0], (err) => {
+            req.login(user[0].id, (err) => {
                 // if (req.params.where = undefined) return res.redirect(`/dashboard`)
                 console.log(req.params.where, req.params.to)
                 return res.redirect(`/${req.params.where}/${req.params.to}/${req.params.go}/${req.params.token}`)
@@ -30,7 +30,7 @@ class authController {
         const user = await model.findUser(req)
         if (user.length == 0) {
             const registeredUser = await model.insertUser(req)
-            req.login(registeredUser[0], (err) => {
+            req.login(registeredUser[0].id, (err) => {
                 return res.redirect(`/dashboard`)
             })
             // return registeredUser ? res.status(200).send(JSON.stringify(registeredUser)) : res.status(400)
