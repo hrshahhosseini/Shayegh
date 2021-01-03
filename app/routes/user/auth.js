@@ -16,6 +16,6 @@ Router.delete(`/logout`, (req, res) => {
 Router.get(`/register`, [isNotAuthenticated()], (req, res) => {
     res.send({ message: `here is register route` })
 })
-Router.post(`/register`, registerValidator(validatorPartials), registerController.register)
+Router.post(`/register`, [isNotAuthenticated(), registerValidator(validatorPartials)], registerController.register)
 
 module.exports = Router
