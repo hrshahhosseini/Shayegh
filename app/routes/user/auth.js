@@ -11,7 +11,7 @@ const registerValidator = require(`../../validator/registerValidatorMiddleware`)
 Router.use(`/login`, login)
 Router.delete(`/logout`, (req, res) => {
     req.logout()
-    res.redirect(`/auth/login`)
+    res.status(400).json({ message: 1000 })
 })
 Router.get(`/register`, [isNotAuthenticated()], (req, res) => {
     res.send({ message: `here is register route` })

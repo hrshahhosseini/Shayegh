@@ -3,8 +3,8 @@ class DashboardModel {
     constructor() { }
     //  ----- group ------
     async newGroup(req, table, fields, options) {
-        const [team] = await db.query(`select team from users where id = ? limit 1`, [req.user.id])
-        if (team[0].team !== null) {
+        const [team] = await this.findOneById(req, `users`, ``, `id`)
+        if (team.team !== null) {
             return 1
         }
         else {
@@ -18,12 +18,13 @@ class DashboardModel {
 
     async addUser(req, table, fields, options) {
         const [findResult] = await this.findOne(req, table, fields, options)
-        const [role] = await db.query(`select role from users where id = ? limit 1`, [req.user.id])
+        const [role] = await this.findOneById(req, `users`, ``, `id`)
+
 
         if (findResult.team !== null)
             return 3 //`user is another group's participant ...`
 
-        else if (role[0].role !== 2)
+        else if (role.role !== 2)
             return 2 //`you can't add user to the group ...`
         else if (findResult !== undefined) {
             await this.update(req)
@@ -36,13 +37,12 @@ class DashboardModel {
     }
 
     async removeUser(req, table, fields, options) {
-        const [role] = await db.query(`select role from users where id = ? limit 1`, [req.user.id])
-        const [team] = await db.query(`select team from users where id = ? limit 1`, [req.user.id])
+        const [res] = await this.findOneById(req, `users`, ``, `id`)
 
         const [findResult] = await this.findOne(req, table, fields, options)
-        if (role[0].role !== 2)
+        if (res.role !== 2)
             return 2 //`you can't remove user from the group ...`
-        else if (team[0].team == findResult.team) {
+        else if (res.team == findResult.team) {
             const [result] = await db.query(`update users set team = ?
             where email = ?
             ` , [null, req.body.email])
@@ -55,23 +55,20 @@ class DashboardModel {
     }
 
     async removeGroup(req, table, fields, options) {
-        const [role] = await db.query(`select role from users where id = ? limit 1`, [req.user.id])
-        const [team] = await db.query(`select team from users where id = ? limit 1`, [req.user.id])
-        if (role[0].role !== 2)
+        const [res] = await this.findOneById(req, `users`, ``, `id`)
+        if (res.role !== 2)
             return 2 //`you can't remove the group ...`
 
 
         const [result1] = await db.query(`update ${table} set role = -1
-        where team = ?` , [team[0].team])
+        where team = ?` , [res.team])
         const [result3] = await db.query(`delete from team 
-        where groupName = ? `, [team[0].team])
+        where groupName = ? `, [res.team])
         const [result2] = await db.query(`update ${table} set team = NULL
-        where team = ?` , [team[0].team])
+        where team = ?` , [res.team])
         if (result3.affectedRows < 1) return 3 //sth went wrong , group name doesn't exists in team table
         return result2
     }
-
-
 
 
     async insert(req, table, fields = [], options) {  //  ?
@@ -87,11 +84,11 @@ class DashboardModel {
         return
     }
     async update(req) {
-        const [team] = await db.query(`select team from users where id = ? limit 1`, [req.user.id])
+        const [team] = await this.findOneById(req, `users`, ``, `id`)
 
         const [result] = await db.query(`
         update users set team =?
-        where email = ? `, [team[0].team, req.body.email])
+        where email = ? `, [team.team, req.body.email])
         return result;
     }
     async findOne(req, table, fields = [], options) {
@@ -139,6 +136,14 @@ class DashboardModel {
         where email = ?
         ` , [sumAmount, option.email])
         return [result.affectedRows, result4.affectedRows]
+    }
+    async findOneById(req, table, fields = [], options) {
+        const lookFor = fields.length > 0 ? fields.join(`,`) : `*`
+        const [result] = await db.query(`
+        select ${lookFor} from ${table} 
+        where ${options} =?
+        limit 1` , [req.user])
+        return result
     }
 }
 
