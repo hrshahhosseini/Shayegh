@@ -7,25 +7,25 @@ const isAuthenticated = authenticated.authenticate
 const isNotAuthenticated = authenticated.notAuthenticate
 const controller = require(`../../../controllers/user/authControllers`)
 
-router.get(`/`, [isNotAuthenticated()], (req, res) => {
+router.get(`/`, [isAuthenticated()], (req, res) => {
     res.send({ message: `you are here to login ...` })
 })
-router.post(`/`, [loginValidator(validatorPartials), isNotAuthenticated()], controller.login) // login
+router.post(`/`, [loginValidator(validatorPartials), isAuthenticated()], controller.login) // login
 
-router.get(`/:where/:to/:go`, [isAuthenticated()], (req, res) => {
+router.get(`/:where/:to/:go`, [isNotAuthenticated()], (req, res) => {
     res.send({ message: `you are here to login ... , ${req.params.where}` })
 })
-router.post(`/:where/:to/:go/:token`, [loginValidator(validatorPartials), isAuthenticated()], controller.loginGoWhere)
+router.post(`/:where/:to/:go/:token`, [loginValidator(validatorPartials), isNotAuthenticated()], controller.loginGoWhere)
 
-router.get(`/forget-password`, [isAuthenticated()], (req, res) => {
+router.get(`/forget-password`, [isNotAuthenticated()], (req, res) => {
     res.send({ message: `you are here to enter you are email ...` })
 })
-router.post(`/forget-password`, [isAuthenticated()], controller.forgetPassword)
+router.post(`/forget-password`, [isNotAuthenticated()], controller.forgetPassword)
 
-router.get(`/reset-password/:token`, [isAuthenticated()], (req, res) => {
+router.get(`/reset-password/:token`, [isNotAuthenticated()], (req, res) => {
     res.send({ message: `you are here to enter new password ...` })
 })
-router.post(`/reset-password/:token`, [isAuthenticated()], controller.resetPassword)
+router.post(`/reset-password/:token`, [isNotAuthenticated()], controller.resetPassword)
 
 
 module.exports = router

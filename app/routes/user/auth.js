@@ -10,7 +10,9 @@ const registerValidator = require(`../../validator/registerValidatorMiddleware`)
 // Router.get(`/sample`, [middleware] , myFunction)
 Router.use(`/login`, login)
 Router.delete(`/logout`, (req, res) => {
+    console.log(req.isAuthenticated(), `out`)
     req.logout()
+    console.log(req.isAuthenticated(), `out`)
     res.status(400).json({ message: 1000 })
 })
 Router.get(`/register`, [isNotAuthenticated()], (req, res) => {
