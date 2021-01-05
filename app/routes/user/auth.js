@@ -9,7 +9,7 @@ const registerValidator = require(`../../validator/registerValidatorMiddleware`)
 Router.use(`/login`, login)
 Router.delete(`/logout`, (req, res) => {
     req.logout()
-    res.redirect(`/auth/login`)
+    res.json({ success: true, message: `successfully logged out` })
 })
 Router.post(`/register`, registerValidator(validatorPartials), registerController.register)
 

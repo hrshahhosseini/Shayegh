@@ -9,6 +9,6 @@ exports.notAuthenticate = () => {
     return (req, res, next) => {
         if (!req.isAuthenticated())
             return next()
-        return res.redirect(`/dashboard`)
+        return res.send({ message: `father mother` })
     }
 }

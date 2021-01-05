@@ -8,9 +8,11 @@ const userIsNotAuthenticate = require(`../../middleware/authentication`).notAuth
 
 
 
-Router.use(`/dashboard` , dashboard )
+Router.use(`/dashboard`, dashboard)
 
 Router.use(`/auth`, login)
-
+Router.get(`/notFound`, (req, res) => {
+    res.send({ message: `no such a route` })
+})
 
 module.exports = Router
