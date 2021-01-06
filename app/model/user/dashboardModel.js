@@ -35,7 +35,6 @@ class DashboardModel {
         }
         return 0
     }
-
     async removeUser(req, table, fields, options) {
         const [res] = await this.findOneById(req, `users`, ``, `id`)
 
@@ -55,21 +54,19 @@ class DashboardModel {
     }
 
     async removeGroup(req, table, fields, options) {
-        const [res] = await this.findOneById(req, `users`, ``, `id`)
-        if (res.role !== 2)
+        const [user] = await this.findOneById(req, `users`, ``, `id`)
+        if (user.role !== 2)
             return 2 //`you can't remove the group ...`
 
-
         const [result1] = await db.query(`update ${table} set role = -1
-        where team = ?` , [res.team])
+        where team = ?` , [user.team])
         const [result3] = await db.query(`delete from team 
-        where groupName = ? `, [res.team])
+        where groupName = ? `, [user.team])
         const [result2] = await db.query(`update ${table} set team = NULL
-        where team = ?` , [res.team])
+        where team = ?` , [user.team])
         if (result3.affectedRows < 1) return 3 //sth went wrong , group name doesn't exists in team table
         return result2
     }
-
 
     async insert(req, table, fields = [], options) {  //  ?
         const result = await db.query(`
@@ -99,6 +96,19 @@ class DashboardModel {
         limit 1` , [req.body.email])
         return result
     }
+    //  ----- wallet -----
+    async chargeWallet(req) {
+        const [result1] = await db.query(`
+        select walletAmount from users
+        where id = ?
+        limit 1`, [req.user.id])
+        const sumAmount = Number(Object.values(result1[0])[0]) + Number(req.body.amount)
+        const [result] = await db.query(`
+        update users set walletAmount = ?
+        where id = ?` , [sumAmount.toString(), req.user.id])
+        return result.affectedRows
+    }
+
     //  ----- wallet -----
     async chargeWallet(req) {
         const [result1] = await db.query(`

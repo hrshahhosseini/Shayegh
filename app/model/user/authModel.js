@@ -13,13 +13,11 @@ class login {
         select * from users where password=? and email=? limit 1` , [req.body.password, req.body.email])
         return result
     }
-
     async findUser1(req) {
         const [result] = await db.query(`
         select * from users where email=? limit 1` , [req.body.email])
         return result
     }
-
     async findUserByEmail(req) {
         const [result] = await db.query(`
         select * from users where email=? limit 1` , [req.body.email])

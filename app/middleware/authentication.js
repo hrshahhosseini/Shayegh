@@ -2,7 +2,7 @@ exports.authenticate = (eNum) => {
     return (req, res, next) => {
         if (req.isAuthenticated())
             return next()
-        return res.send({ accessCode: 1001 }) // access denied
+        return res.json({ success: false, message: `access denied ,  please login first` })
     }
 }
 exports.notAuthenticate = () => {
@@ -10,6 +10,6 @@ exports.notAuthenticate = () => {
         console.log(req.isAuthenticated())
         if (!req.isAuthenticated())
             return next()
-        return res.send({ accessCode: 1002})
+        return res.send({ success: false, message: `access denied ,  please logout first` })
     }
 }

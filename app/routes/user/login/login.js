@@ -2,15 +2,19 @@ const express = require(`express`)
 const router = express.Router()
 const loginValidator = require(`../../../validator/loginValidatorMiddleware`)
 const validatorPartials = require(`../../../validator/loginValidator`)
-const authenticated = require(`../../../middleware/authentication`)
-const isAuthenticated = authenticated.authenticate
-const isNotAuthenticated = authenticated.notAuthenticate
+const notLoggedIn = require(`../../../middleware/authentication`).notAuthenticate
+const loggedIn = require(`../../../middleware/authentication`).authenticate
+
 const controller = require(`../../../controllers/user/authControllers`)
 
-router.get(`/`, [isAuthenticated()], (req, res) => {
-    res.send({ message: `you are here to login ...` })
+router.post(`/`, [loginValidator(validatorPartials), notLoggedIn()], controller.login) // login
+router.get(`/`, notLoggedIn(), (req, res) => {
+    res.send({ message: `ur here to login ...` })
 })
-router.post(`/`, [loginValidator(validatorPartials), isAuthenticated()], controller.login) // login
+router.get(`/:where/:to/:go`, [loggedIn()], (req, res) => {
+    res.send({ message: `you are here to login ... , ${req.params.where}` })
+})
+router.post(`/:where/:to/:go/:token`, [loginValidator(validatorPartials), loggedIn()], controller.loginGoWhere)
 
 router.get(`/:where/:to/:go`, [isNotAuthenticated()], (req, res) => {
     res.send({ message: `you are here to login ... , ${req.params.where}` })

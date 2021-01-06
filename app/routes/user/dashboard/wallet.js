@@ -1,16 +1,16 @@
 const express = require(`express`)
 const Router = express.Router()
 const authenticated = require(`../../../middleware/authentication`)
-const isAuthenticated = authenticated.authenticate
-const isNotAuthenticated = authenticated.notAuthenticate
+const notLoggedIn = authenticated.notAuthenticate
+const loggedIn = authenticated.authenticate
 const controller = require(`../../../controllers/user/dashboardController`)
 
-Router.get(`/`, [isAuthenticated()], (req, res) => {
+Router.get(`/`, [loggedIn()], (req, res) => {
     res.send({ message: `here is wallet ...` })
 })
-Router.post(`/charge-wallet`, [isAuthenticated()], controller.wallet)
+Router.post(`/charge-wallet`, [loggedIn()], controller.wallet)
 
-Router.post(`/charge-request`, [isAuthenticated()], controller.requestCharge)
+Router.post(`/charge-request`, [loggedIn()], controller.requestCharge)
 
 Router.get(`/confirm-charge-request/:token`, function (req, res, next) {
     const token = req.params.token
@@ -21,7 +21,7 @@ Router.get(`/confirm-charge-request/:token`, function (req, res, next) {
     }
 }, controller.requestChargeShow)
 
-Router.post(`/confirm-charge-request/:token`, [isAuthenticated()], controller.requestChargeDo)
+Router.post(`/confirm-charge-request/:token`, [loggedIn()], controller.requestChargeDo)
 
 
 module.exports = Router

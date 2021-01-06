@@ -5,19 +5,19 @@ const passport = require(`passport`)
 
 class authController {
     constructor() { }
+    // ---- login ----
     async login(req, res) {
         const user = await model.findUser1(req)
         if (user.length > 0) {
             if (req.body.password !== user[0].password) {
-                return res.json({ accessCode: 1020, message: `user pass doesn't match` })
+                return res.json({ success: false, message: `user pass doesn't match` })
             }
             req.login(user[0].id, (err) => {
-                return res.status(200).json({ accessCode: 1000, message: `success` })
+                return res.status(200).json({ success: true, message: `successfully logged in` })
             })
         }
-        return res.status(400).json({ accessCode: 1003, message: `user doesn't exists` }) //  ...
+        return res.status(400).json({ success: false, message: `user doesn't exists` })
     }
-
     async loginGoWhere(req, res) {
         const user = await model.findUser(req)
         if (user.length > 0) {
@@ -27,8 +27,9 @@ class authController {
                 return res.redirect(`/${req.params.where}/${req.params.to}/${req.params.go}/${req.params.token}`)
             })
         }
-        return res.status(400).json({ accessCode: 1003, message: `user doesn't exists` }) //  ...
+        return res.status(400).json({ success: false, message: `user doesn't exists` }) //  ...
     }
+
 
     async register(req, res) {
         const user = await model.findUser(req)
