@@ -2,13 +2,13 @@ exports.authenticate = () => {
     return (req, res, next) => {
         if (req.isAuthenticated())
             return next()
-        return res.redirect(`/auth/login`)
+        return res.json({ success: false, message: `access denied ,  please login first` })
     }
 }
 exports.notAuthenticate = () => {
     return (req, res, next) => {
         if (!req.isAuthenticated())
             return next()
-        return res.send({ message: `father mother` })
+        return res.send({ success: false, message: `access denied ,  please logout first` })
     }
 }

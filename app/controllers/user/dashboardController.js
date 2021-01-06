@@ -64,7 +64,7 @@ class DashboardController {
 
     // ---- dashboard ----
     async dashboard(req, res) {
-        const result = await model.findOneById(req, `users`, [`id`, `username`, `name`, `lastName`, `email`, `phoneNumber`, `createdAt`], `id`)
+        const result = await model.findOneById(req, `users`, [`id`, `username`, `name`, `lastName`, `email`, `phoneNumber`, `createdAt` , `team` , `walletAmount`], `id`)
         return res.json({ success: true, user: result[0] })
     }
 
