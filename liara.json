@@ -1,0 +1,7 @@
+{
+    "app": "ddong",
+    "port": "5000",
+    "node": {
+        "version": "12"
+    }
+}

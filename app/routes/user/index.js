@@ -1,13 +1,13 @@
 const express = require('express')
-const { notAuthenticate } = require('../../middleware/authentication')
 const Router = express.Router()
 const login = require(`./auth`)
 const dashboard = require(`./dashboard`)
-const userIsAuthenticated = require(`../../middleware/authentication`).authenticate
-const userIsNotAuthenticate = require(`../../middleware/authentication`).notAuthenticate
 
 
 
+Router.get(`/`, (req, res) => {
+    res.send({ message: `here is root ...` })
+})
 Router.use(`/dashboard`, dashboard)
 
 Router.use(`/auth`, login)

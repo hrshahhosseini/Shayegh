@@ -1,5 +1,5 @@
 const model = require(`../../model/user/authModel`)
-const email = require(`../../services/mailService`)
+const emailService = require(`../../services/mailService`)
 const jwt = require(`jsonwebtoken`)
 const passport = require(`passport`)
 
@@ -8,11 +8,11 @@ class authController {
     // ---- login ----
     async login(req, res) {
         const user = await model.findUser1(req)
-        if (user.length > 0) {
-            if (req.body.password !== user[0].password) {
+        if (user) {
+            if (user.matched == false) {
                 return res.json({ success: false, message: `user pass doesn't match` })
             }
-            req.login(user[0].id, (err) => {
+            req.login(user.id, (err) => {
                 return res.status(200).json({ success: true, message: `successfully logged in` })
             })
         }
@@ -21,6 +21,9 @@ class authController {
     async loginGoWhere(req, res) {
         const user = await model.findUser(req)
         if (user.length > 0) {
+            if (req.body.password !== user[0].password) {
+                return res.json({ success: false, message: `user pass doesn't match` })
+            }
             req.login(user[0].id, (err) => {
                 // if (req.params.where = undefined) return res.redirect(`/dashboard`)
                 console.log(req.params.where, req.params.to)
@@ -35,24 +38,24 @@ class authController {
         const user = await model.findUser(req)
         if (user.length == 0) {
             const registeredUser = await model.insertUser(req)
-            req.login(registeredUser, (err) => {
-                return res.redirect(`/dashboard`)
+            req.login(registeredUser[0].id, (err) => {
+                return res.status(200).json({ success: true, message: `success` })
             })
-            // return registeredUser ? res.status(200).send(JSON.stringify(registeredUser)) : res.status(400)
+            // return registeredUser ? res.status(200).json(JSON.stringify(registeredUser)) : res.status(400)
         }
-        return res.status(400).send({ message: `user exists ...` })
+        return res.status(400).json({ success: false, message: `user exists ` }) // ...
     }
 
     async forgetPassword(req, res) {
         const user = await model.findUserByEmail(req)
         if (user.length == 0)
-            return res.status(400).json({ error: `no user found with this email-address` })
+            return res.status(400).json({ success: false, message: `no user found with this email-address` })
         const token = jwt.sign({ email: req.body.email }, process.env.RESET_PASSWORD_SECRET, { expiresIn: '20m' })
         // jwt.verify(token, process.env.RESET_PASSWORD_SECRET, (err, encodedData) => {
         //     console.log(encodedData)
         // })
         const result = await model.updateUserResetLinkForReset(req, token)
-        email.mail(req, token)
+        emailService.mail(req, token)
         return res.redirect(`/auth/login/reset-password/:token`)
     }
 
@@ -60,16 +63,16 @@ class authController {
         const resetLink = req.params.token
 
         if (!resetLink)
-            return res.status(400).send({ err: `err in reset link ...` })
+            return res.status(400).json({ err: 1006, message: `err in reset link` }) //  ...
         const encodedData = jwt.verify(resetLink, (process.env.RESET_PASSWORD_SECRET))
         const user = await model.findOneForReset([], `users`, encodedData.email)
 
         if (user[0].resetLink !== resetLink)
-            return res.status(400).send({ err: `incorrect token ...` })
+            return res.status(400).json({ err: 1007, message: `incorrect token` }) //  ...
         const updated = await model.updateUserResetLinkForReset(req, ``)
 
         const result = await model.updateUserPasswordForReset(req, encodedData.email)
-        return res.status(200).redirect(`/auth/login`)
+        return res.status(200).json({ success: true, message: `success` })
     }
 }
 

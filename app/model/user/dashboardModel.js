@@ -1,17 +1,36 @@
 const db = require(`../../../database/index`)
 class DashboardModel {
     constructor() { }
+    //  ----- group ------
     async newGroup(req, table, fields, options) {
-        const [result] = await this.insert(req, table, fields, options)
-        await this.update2(req)
-        return result.affectedRows
+        const [team] = await this.findOneById(req, `users`, ``, `id`)
+        if (team.team !== null) {
+            return 1
+        }
+        else {
+            const [result] = await this.insert(req, table, fields, options)
+            await this.update2(req)
+            await db.query(`update users set role = 2 where id = ?`, [req.user.id])
+            return result
+        }
     }
 
 
     async addUser(req, table, fields, options) {
         const [findResult] = await this.findOne(req, table, fields, options)
-        if (findResult !== undefined) {
+        const [role] = await this.findOneById(req, `users`, ``, `id`)
+
+
+        if (findResult.team !== null)
+            return 3 //`user is another group's participant ...`
+
+        else if (role.role !== 2)
+            return 2 //`you can't add user to the group ...`
+        else if (findResult !== undefined) {
             await this.update(req)
+            if (req.body.role = 1) await db.query(`update users set role = 1 where email = ?`, [req.body.email])
+            else if (req.body.role = 0) await db.query(`update users set role = 0 where email = ?`, [req.body.email])
+
             return 1
         }
         return 0
@@ -55,10 +74,18 @@ class DashboardModel {
         set ?` , { groupName: req.body.groupName })
         return result
     }
-    async update(req) {
+    async update2(req) {
         const [result] = await db.query(`
         update users set team =?
-        where email = ? `, [req.user.team, req.body.email])
+        where id = ? `, [req.body.groupName, req.user.id])
+        return
+    }
+    async update(req) {
+        const [team] = await this.findOneById(req, `users`, ``, `id`)
+
+        const [result] = await db.query(`
+        update users set team =?
+        where email = ? `, [team.team, req.body.email])
         return result;
     }
     async findOne(req, table, fields = [], options) {
@@ -69,11 +96,17 @@ class DashboardModel {
         limit 1` , [req.body.email])
         return result
     }
-    async update2(req) {
+    //  ----- wallet -----
+    async chargeWallet(req) {
+        const [result1] = await db.query(`
+        select walletAmount from users
+        where id = ?
+        limit 1`, [req.user.id])
+        const sumAmount = Number(Object.values(result1[0])[0]) + Number(req.body.amount)
         const [result] = await db.query(`
-        update users set team =?
-        where id = ? `, [req.body.groupName, req.user.id])
-        return
+        update users set walletAmount = ?
+        where id = ?` , [sumAmount.toString(), req.user.id])
+        return result.affectedRows
     }
 
     //  ----- wallet -----
@@ -122,7 +155,6 @@ class DashboardModel {
         limit 1` , [req.user])
         return result
     }
-
 }
 
 

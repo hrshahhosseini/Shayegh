@@ -1,4 +1,7 @@
 const model = require(`../../model/user/dashboardModel`)
+const mailService = require(`../../services/mailService-chargeRequest`)
+const passport = require(`passport`)
+const jwt = require(`jsonwebtoken`)
 class DashboardController {
     constructor() { }
 
@@ -64,11 +67,51 @@ class DashboardController {
 
     // ---- dashboard ----
     async dashboard(req, res) {
-        const result = await model.findOneById(req, `users`, [`id`, `username`, `name`, `lastName`, `email`, `phoneNumber`, `createdAt`], `id`)
+        const result = await model.findOneById(req, `users`, [`id`, `username`, `name`, `lastName`, `email`, `phoneNumber`, `createdAt` , `team` , `walletAmount`], `id`)
         return res.json({ success: true, user: result[0] })
     }
 
+    async wallet(req, res) {
+        const result = await model.chargeWallet(req)
+        return result > 0 ? res.status(200).send({ accessCode: 1000, message: `success` }) :
+            res.status(200).json({ accessCode: 1015, message: `something went wrong. please contact us` })
+            , console.log(result) // `
+    }
+
+    async requestCharge(req, res) {
+        const result = await model.findOneById(req, `users`, ``, `id`)
+        const token = jwt.sign({ email: result[0].email, amount: req.body.amount }, process.env.CHARGE_REQUEST_SECRET, { expiresIn: `10m` })
+        mailService.mail(req, token)
+        return res.status(200).json({ accessCode: 1000, message: `success` })
+    }
+
+    async requestChargeShow(req, res) {
+        const token = req.params.token
+        const encodedData = jwt.verify(token, (process.env.CHARGE_REQUEST_SECRET))
+        return res.status(200).json({ accessCode: 1000, message: `success` })
+    }
+
+    async requestChargeDo(req, res) {
+        const token = req.params.token
+        const encodedData = jwt.verify(token, (process.env.CHARGE_REQUEST_SECRET))
+        if (req.body.confirm == true) {
+            const result = await model.transition(req, encodedData)
+            if (result == 1.1) return res.status(400).json({ accessCode: 1016, message: `` }) // `موجودی حساب شما کافی نیست
+            return res.status(200).json({ accessCode: 1000, message: `success` })
+        } else {
+            console.log(`err`)
+        }
+
+    }
+
+
+
 }
 
-
+passport.serializeUser((user_id, done) => {
+    done(null, user_id);
+});
+passport.deserializeUser((user_id, done) => {
+    done(null, user_id);
+});
 module.exports = new DashboardController;
