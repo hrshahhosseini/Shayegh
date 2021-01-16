@@ -21,6 +21,9 @@ class authController {
     async loginGoWhere(req, res) {
         const user = await model.findUser(req)
         if (user.length > 0) {
+            if (req.body.password !== user[0].password) {
+                return res.json({ success: false, message: `user pass doesn't match` })
+            }
             req.login(user[0].id, (err) => {
                 // if (req.params.where = undefined) return res.redirect(`/dashboard`)
                 console.log(req.params.where, req.params.to)
@@ -36,17 +39,17 @@ class authController {
         if (user.length == 0) {
             const registeredUser = await model.insertUser(req)
             req.login(registeredUser[0].id, (err) => {
-                return res.status(200).json({ accessCode: 1000, message: `success` }) // dashboard
+                return res.status(200).json({ success: true, message: `success` })
             })
             // return registeredUser ? res.status(200).json(JSON.stringify(registeredUser)) : res.status(400)
         }
-        return res.status(400).json({ accessCode: 1004, message: `user exists ` }) // ...
+        return res.status(400).json({ success: false, message: `user exists ` }) // ...
     }
 
     async forgetPassword(req, res) {
         const user = await model.findUserByEmail(req)
         if (user.length == 0)
-            return res.status(400).json({ error: 1005 }) // no user found with this email-address
+            return res.status(400).json({ success: false, message: `no user found with this email-address` })
         const token = jwt.sign({ email: req.body.email }, process.env.RESET_PASSWORD_SECRET, { expiresIn: '20m' })
         // jwt.verify(token, process.env.RESET_PASSWORD_SECRET, (err, encodedData) => {
         //     console.log(encodedData)
@@ -69,7 +72,7 @@ class authController {
         const updated = await model.updateUserResetLinkForReset(req, ``)
 
         const result = await model.updateUserPasswordForReset(req, encodedData.email)
-        return res.status(200).json({ accessCode: 1000, message: `success` })
+        return res.status(200).json({ success: true, message: `success` })
     }
 }
 

@@ -26,11 +26,12 @@ class login {
 
     async insertUser(req) {
         let newUser = {
-            // name: req.body.name , 
+            username: req.body.username,
+            name: req.body.name , 
+            lastName : req.body.lastName,
+            password: req.body.password,
             email: req.body.email,
-            // lastName : req.body.lastName,
-            // phoneNumber :req.body.phoneNumber,
-            password: req.body.password
+            phoneNumber :req.body.phoneNumber            
         }
         const [result] = await db.query(`
         insert into users set ? ` , newUser)

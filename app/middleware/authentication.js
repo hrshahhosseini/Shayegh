@@ -7,7 +7,6 @@ exports.authenticate = (eNum) => {
 }
 exports.notAuthenticate = () => {
     return (req, res, next) => {
-        console.log(req.isAuthenticated())
         if (!req.isAuthenticated())
             return next()
         return res.send({ success: false, message: `access denied ,  please logout first` })

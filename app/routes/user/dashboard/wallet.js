@@ -12,7 +12,7 @@ Router.post(`/charge-wallet`, [loggedIn()], controller.wallet)
 
 Router.post(`/charge-request`, [loggedIn()], controller.requestCharge)
 
-Router.get(`/confirm-charge-request/:token`, function (req, res, next) {
+Router.get(`/confirm-charge-request/:token`, [loggedIn()], function (req, res, next) {
     const token = req.params.token
     if (req.isAuthenticated())
         return next()

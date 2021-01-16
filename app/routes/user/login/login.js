@@ -11,25 +11,25 @@ router.post(`/`, [loginValidator(validatorPartials), notLoggedIn()], controller.
 router.get(`/`, notLoggedIn(), (req, res) => {
     res.send({ message: `ur here to login ...` })
 })
-router.get(`/:where/:to/:go`, [loggedIn()], (req, res) => {
+router.get(`/:where/:to/:go/:token`, [loggedIn()], (req, res) => {
     res.send({ message: `you are here to login ... , ${req.params.where}` })
 })
 router.post(`/:where/:to/:go/:token`, [loginValidator(validatorPartials), loggedIn()], controller.loginGoWhere)
 
-router.get(`/:where/:to/:go`, [isNotAuthenticated()], (req, res) => {
+router.get(`/:where/:to/:go`, [notLoggedIn()], (req, res) => { // in va in be paean
     res.send({ message: `you are here to login ... , ${req.params.where}` })
 })
-router.post(`/:where/:to/:go/:token`, [loginValidator(validatorPartials), isNotAuthenticated()], controller.loginGoWhere)
+router.post(`/:where/:to/:go/:token`, [loginValidator(validatorPartials), notLoggedIn()], controller.loginGoWhere)
 
-router.get(`/forget-password`, [isNotAuthenticated()], (req, res) => {
+router.get(`/forget-password`, [notLoggedIn()], (req, res) => {
     res.send({ message: `you are here to enter you are email ...` })
 })
-router.post(`/forget-password`, [isNotAuthenticated()], controller.forgetPassword)
+router.post(`/forget-password`, [notLoggedIn()], controller.forgetPassword)
 
-router.get(`/reset-password/:token`, [isNotAuthenticated()], (req, res) => {
+router.get(`/reset-password/:token`, [notLoggedIn()], (req, res) => {
     res.send({ message: `you are here to enter new password ...` })
 })
-router.post(`/reset-password/:token`, [isNotAuthenticated()], controller.resetPassword)
+router.post(`/reset-password/:token`, [notLoggedIn()], controller.resetPassword)
 
 
 module.exports = router
