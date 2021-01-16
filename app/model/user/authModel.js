@@ -1,3 +1,4 @@
+const hashPassword = require(`../../services/hashService`)
 const db = require(`../../../database`)
 class login {
     constructor() { }
@@ -16,7 +17,11 @@ class login {
     async findUser1(req) {
         const [result] = await db.query(`
         select * from users where email=? limit 1` , [req.body.email])
-        return result
+        let matched = false
+        if (hashPassword.checkPassword(req.body.password, result[0].password) == true)
+            matched = true;
+        const newResult = { ...result[0], matched: matched }
+        return newResult
     }
     async findUserByEmail(req) {
         const [result] = await db.query(`
@@ -25,14 +30,16 @@ class login {
     }
 
     async insertUser(req) {
-        let newUser = {
+        let user = {
             username: req.body.username,
-            name: req.body.name , 
-            lastName : req.body.lastName,
-            password: req.body.password,
+            name: req.body.name,
+            lastName: req.body.lastName,
+            // password: req.body.password,
             email: req.body.email,
-            phoneNumber :req.body.phoneNumber            
+            phoneNumber: req.body.phoneNumber
         }
+        const password = hashPassword.hashPassword(req.body.password)
+        const newUser = { ...user, password: password }
         const [result] = await db.query(`
         insert into users set ? ` , newUser)
         const [mainResult] = await db.query(`

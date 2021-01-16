@@ -8,11 +8,11 @@ class authController {
     // ---- login ----
     async login(req, res) {
         const user = await model.findUser1(req)
-        if (user.length > 0) {
-            if (req.body.password !== user[0].password) {
+        if (user) {
+            if (user.matched == false) {
                 return res.json({ success: false, message: `user pass doesn't match` })
             }
-            req.login(user[0].id, (err) => {
+            req.login(user.id, (err) => {
                 return res.status(200).json({ success: true, message: `successfully logged in` })
             })
         }
